@@ -47,6 +47,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        profit: "hsl(var(--profit))",
+        loss: "hsl(var(--loss))",
+        "neon-purple": "hsl(var(--neon-purple))",
+        "neon-blue": "hsl(var(--neon-blue))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
