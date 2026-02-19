@@ -3,6 +3,7 @@ import { Wallet, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ALL_SYMBOLS } from "@/data/mockTrades";
+import logo from "@/assets/logo.webp";
 
 type DateRange = "24h" | "7d" | "30d" | "all";
 
@@ -33,9 +34,7 @@ export function Header({ dateRange, setDateRange, selectedSymbols, setSelectedSy
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/20">
-          <span className="text-lg font-black text-primary">D</span>
-        </div>
+        <img src={logo} alt="Deriverse logo" className="h-9 w-9 rounded-lg" />
         <h1 className="text-xl font-bold tracking-tight">
           Deriverse <span className="text-muted-foreground font-normal">Analytics</span>
         </h1>
