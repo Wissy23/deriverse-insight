@@ -4,6 +4,7 @@ export interface Trade {
   side: "Long" | "Short";
   entryPrice: number;
   exitPrice: number;
+  requestedPrice: number;
   size: number;
   realizedPnl: number;
   fee: number;
@@ -12,6 +13,9 @@ export interface Trade {
   orderType: "Market" | "Limit" | "Trigger";
   entryTime: string;
   exitTime: string;
+  candleLow: number;
+  candleHigh: number;
+  timeToFillMs: number;
   notes?: string;
 }
 
@@ -39,6 +43,9 @@ function generateTrade(i: number): Trade {
     default: entryPrice = r(1, 100);
   }
 
+  const slippageBps = r(0.5, 15);
+  const requestedPrice = parseFloat((entryPrice / (1 + (Math.random() > 0.5 ? 1 : -1) * slippageBps / 10000)).toPrecision(6));
+
   const movePercent = r(-15, 20) / 100;
   const exitPrice = parseFloat((entryPrice * (1 + (side === "Long" ? movePercent : -movePercent))).toPrecision(6));
   const size = asset === "BONK" ? r(1000000, 50000000, 0) : r(1, 500, 1);
@@ -49,6 +56,11 @@ function generateTrade(i: number): Trade {
   const networkFee = totalFee * r(0.3, 0.5);
   const protocolFee = totalFee - networkFee;
   const realizedPnl = parseFloat((pnlRaw - totalFee).toFixed(2));
+
+  const candleSpread = entryPrice * r(0.5, 5) / 100;
+  const candleLow = parseFloat((Math.min(entryPrice, exitPrice) - candleSpread * Math.random()).toPrecision(6));
+  const candleHigh = parseFloat((Math.max(entryPrice, exitPrice) + candleSpread * Math.random()).toPrecision(6));
+  const timeToFillMs = Math.round(r(200, 8000, 0));
 
   const baseDate = new Date("2025-12-01");
   const dayOffset = Math.floor(i / 2);
@@ -65,6 +77,7 @@ function generateTrade(i: number): Trade {
     side,
     entryPrice,
     exitPrice,
+    requestedPrice,
     size,
     realizedPnl,
     fee: parseFloat(totalFee.toFixed(2)),
@@ -73,6 +86,9 @@ function generateTrade(i: number): Trade {
     orderType,
     entryTime: entry.toISOString(),
     exitTime: exit.toISOString(),
+    candleLow,
+    candleHigh,
+    timeToFillMs,
   };
 }
 
