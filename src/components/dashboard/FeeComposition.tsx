@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trade } from "@/data/mockTrades";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -7,7 +6,6 @@ interface Props {
 }
 
 export function FeeComposition({ trades }: Props) {
-  // Group by asset
   const assetMap = new Map<string, { network: number; protocol: number }>();
   trades.forEach((t) => {
     const cur = assetMap.get(t.asset) || { network: 0, protocol: 0 };
@@ -23,27 +21,27 @@ export function FeeComposition({ trades }: Props) {
   }));
 
   return (
-    <Card className="border-border/50 bg-card/80 backdrop-blur">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">Fee Composition</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="glass-card animate-fade-in" style={{ animationDelay: "250ms" }}>
+      <div className="p-4 pb-2">
+        <h3 className="text-sm font-medium">Fee Composition</h3>
+      </div>
+      <div className="p-4 pt-0">
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(217,25%,16%)" />
-              <XAxis dataKey="asset" tick={{ fontSize: 10, fill: "hsl(215,20%,55%)" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: "hsl(215,20%,55%)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(224,20%,14%)" />
+              <XAxis dataKey="asset" tick={{ fontSize: 10, fill: "hsl(218,15%,50%)" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: "hsl(218,15%,50%)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
               <Tooltip
-                contentStyle={{ background: "hsl(222,44%,10%)", border: "1px solid hsl(217,25%,16%)", borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: "hsl(225,28%,9%)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="network" name="Network Fee" stackId="a" fill="hsl(217,91%,60%)" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="protocol" name="Protocol Fee" stackId="a" fill="hsl(263,70%,58%)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="network" name="Network Fee" stackId="a" fill="hsl(199,89%,56%)" radius={[0, 0, 0, 0]} animationDuration={800} />
+              <Bar dataKey="protocol" name="Protocol Fee" stackId="a" fill="hsl(263,70%,58%)" radius={[4, 4, 0, 0]} animationDuration={800} animationBegin={200} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { mockTrades } from "@/data/mockTrades";
 import { Header } from "@/components/dashboard/Header";
 import { KPITiles } from "@/components/dashboard/KPITiles";
@@ -101,11 +101,11 @@ const Index = () => {
 
         {/* Export */}
         <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => exportData(filteredTrades, "csv")}>
+          <Button variant="outline" size="sm" className="gap-2 text-xs border-white/[0.06] hover:bg-accent/50" onClick={() => exportData(filteredTrades, "csv")}>
             <Download className="h-3.5 w-3.5" />
             Export CSV
           </Button>
-          <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => exportData(filteredTrades, "json")}>
+          <Button variant="outline" size="sm" className="gap-2 text-xs border-white/[0.06] hover:bg-accent/50" onClick={() => exportData(filteredTrades, "json")}>
             <Download className="h-3.5 w-3.5" />
             Export JSON
           </Button>
