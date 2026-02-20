@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trade } from "@/data/mockTrades";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -24,21 +23,21 @@ export function DirectionalBias({ trades }: Props) {
   ];
 
   return (
-    <Card className="border-border/50 bg-card/80 backdrop-blur">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">Directional Bias</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="glass-card animate-fade-in" style={{ animationDelay: "100ms" }}>
+      <div className="p-4 pb-2">
+        <h3 className="text-sm font-medium">Directional Bias</h3>
+      </div>
+      <div className="p-4 pt-0">
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(217,25%,16%)" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(215,20%,55%)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(224,20%,14%)" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(218,15%,50%)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
               <YAxis type="category" dataKey="direction" tick={{ fontSize: 12, fill: "hsl(210,40%,96%)" }} axisLine={false} tickLine={false} width={50} />
               <Tooltip
-                contentStyle={{ background: "hsl(222,44%,10%)", border: "1px solid hsl(217,25%,16%)", borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: "hsl(225,28%,9%)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, fontSize: 12 }}
               />
-              <Bar dataKey="pnl" name="PnL" radius={[0, 6, 6, 0]} fill="hsl(263,70%,58%)" />
+              <Bar dataKey="pnl" name="PnL" radius={[0, 6, 6, 0]} fill="hsl(263,70%,58%)" animationDuration={800} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -46,7 +45,7 @@ export function DirectionalBias({ trades }: Props) {
           <span>Long: {longs.length} trades ({trades.length ? ((longs.length / trades.length) * 100).toFixed(0) : 0}%)</span>
           <span>Short: {shorts.length} trades ({trades.length ? ((shorts.length / trades.length) * 100).toFixed(0) : 0}%)</span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Wallet, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ALL_SYMBOLS } from "@/data/mockTrades";
 import logo from "@/assets/logo.webp";
 
@@ -32,7 +31,7 @@ export function Header({ dateRange, setDateRange, selectedSymbols, setSelectedSy
   ];
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.06] bg-card/50 backdrop-blur-xl px-6 py-4">
       <div className="flex items-center gap-3">
         <img src={logo} alt="Deriverse logo" className="h-9 w-9 rounded-lg" />
         <h1 className="text-xl font-bold tracking-tight">
@@ -42,7 +41,7 @@ export function Header({ dateRange, setDateRange, selectedSymbols, setSelectedSy
 
       <div className="flex flex-wrap items-center gap-3">
         {/* Date Range */}
-        <div className="flex rounded-lg border border-border bg-secondary/50 p-0.5">
+        <div className="flex rounded-lg border border-white/[0.06] bg-secondary/30 p-0.5">
           {ranges.map((r) => (
             <button
               key={r.value}
@@ -64,20 +63,20 @@ export function Header({ dateRange, setDateRange, selectedSymbols, setSelectedSy
             variant="outline"
             size="sm"
             onClick={() => setSymbolOpen(!symbolOpen)}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs border-white/[0.06]"
           >
             Tokens {selectedSymbols.length > 0 && `(${selectedSymbols.length})`}
             <ChevronDown className="h-3 w-3" />
           </Button>
           {symbolOpen && (
-            <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-border bg-popover p-2 shadow-xl">
+            <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-xl border border-white/[0.06] bg-popover/95 backdrop-blur-xl p-2 shadow-2xl">
               {ALL_SYMBOLS.map((s) => (
                 <button
                   key={s}
                   onClick={() => toggleSymbol(s)}
-                  className={`flex w-full items-center justify-between rounded-md px-3 py-1.5 text-xs transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs transition-colors ${
                     selectedSymbols.includes(s)
-                      ? "bg-primary/20 text-primary"
+                      ? "bg-primary/15 text-primary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}
                 >
@@ -88,7 +87,7 @@ export function Header({ dateRange, setDateRange, selectedSymbols, setSelectedSy
               {selectedSymbols.length > 0 && (
                 <button
                   onClick={() => setSelectedSymbols([])}
-                  className="mt-1 w-full rounded-md px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                  className="mt-1 w-full rounded-lg px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
                 >
                   Clear all
                 </button>

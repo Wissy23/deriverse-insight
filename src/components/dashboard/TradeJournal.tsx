@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Trade } from "@/data/mockTrades";
-import { MessageSquare, ArrowUpDown, Tag } from "lucide-react";
+import { MessageSquare, ArrowUpDown, Tag, Clock, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
   trades: Trade[];
@@ -28,6 +26,13 @@ function loadJournalData(): Record<string, { note: string; tags: string[] }> {
 
 function saveJournalData(data: Record<string, { note: string; tags: string[] }>) {
   localStorage.setItem("deriverse-journal", JSON.stringify(data));
+}
+
+function formatDuration(entryTime: string, exitTime: string) {
+  const mins = (new Date(exitTime).getTime() - new Date(entryTime).getTime()) / 60000;
+  if (mins < 60) return `${mins.toFixed(0)}m`;
+  if (mins < 1440) return `${(mins / 60).toFixed(1)}h`;
+  return `${(mins / 1440).toFixed(1)}d`;
 }
 
 export function TradeJournal({ trades, highlightedAsset }: Props) {
@@ -88,7 +93,7 @@ export function TradeJournal({ trades, highlightedAsset }: Props) {
   };
 
   const SortBtn = ({ k, children }: { k: SortKey; children: React.ReactNode }) => (
-    <button onClick={() => handleSort(k)} className="flex items-center gap-1 hover:text-foreground">
+    <button onClick={() => handleSort(k)} className="flex items-center gap-1 hover:text-foreground transition-colors">
       {children}
       <ArrowUpDown className="h-3 w-3" />
     </button>
@@ -96,89 +101,90 @@ export function TradeJournal({ trades, highlightedAsset }: Props) {
 
   return (
     <>
-      <Card className="border-border/50 bg-card/80 backdrop-blur">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Trade Journal</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="max-h-[420px] overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border/50 hover:bg-transparent">
-                  <TableHead className="text-xs"><SortBtn k="asset">Asset</SortBtn></TableHead>
-                  <TableHead className="text-xs">Side</TableHead>
-                  <TableHead className="text-xs">Entry</TableHead>
-                  <TableHead className="text-xs">Exit</TableHead>
-                  <TableHead className="text-xs"><SortBtn k="size">Size</SortBtn></TableHead>
-                  <TableHead className="text-xs"><SortBtn k="realizedPnl">PnL</SortBtn></TableHead>
-                  <TableHead className="text-xs">Fee</TableHead>
-                  <TableHead className="text-xs">Tags</TableHead>
-                  <TableHead className="text-xs w-8"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sorted.map((t) => {
-                  const entry = journal[t.id];
-                  const isHighlighted = !highlightedAsset || highlightedAsset === t.asset;
-                  return (
-                    <TableRow
-                      key={t.id}
-                      className={`cursor-pointer border-border/30 hover:bg-accent/50 transition-opacity ${
-                        isHighlighted ? "opacity-100" : "opacity-25"
-                      }`}
-                      onClick={() => openNote(t)}
-                    >
-                      <TableCell className="text-xs font-medium">{t.asset}</TableCell>
-                      <TableCell>
-                        <Badge className={`text-[10px] px-1.5 py-0 ${
-                          t.side === "Long"
-                            ? "bg-profit/15 text-profit border-profit/30"
-                            : "bg-loss/15 text-loss border-loss/30"
-                        }`}>
-                          {t.side}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">${t.entryPrice}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">${t.exitPrice}</TableCell>
-                      <TableCell className="text-xs">{t.size.toLocaleString()}</TableCell>
-                      <TableCell className={`text-xs font-medium ${t.realizedPnl >= 0 ? "text-profit" : "text-loss"}`}>
-                        {t.realizedPnl >= 0 ? "+" : ""}${t.realizedPnl.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">${t.fee.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1 max-w-[180px]">
-                          {entry?.tags?.map((tag) => (
-                            <Badge
-                              key={tag}
-                              className="text-[9px] px-1 py-0 bg-primary/20 text-primary border-primary/30 cursor-pointer hover:bg-primary/30"
-                              onClick={(e) => toggleQuickTag(t.id, tag, e)}
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {entry?.note && <MessageSquare className="h-3 w-3 text-primary" />}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+      <div className="glass-card animate-fade-in">
+        <div className="flex items-center justify-between p-4 pb-3">
+          <h3 className="text-sm font-medium">Trade Journal</h3>
+          <span className="text-[10px] text-muted-foreground">{trades.length} trades</span>
+        </div>
+        <div className="max-h-[440px] overflow-auto scrollbar-thin">
+          {/* Header row */}
+          <div className="sticky top-0 z-10 grid grid-cols-[1fr_0.6fr_0.8fr_0.8fr_0.7fr_0.8fr_1.2fr_28px] gap-2 border-b border-border/50 bg-card/95 backdrop-blur-sm px-4 py-2 text-[11px] font-medium text-muted-foreground">
+            <div><SortBtn k="asset">Asset</SortBtn></div>
+            <div>Side</div>
+            <div>Entry / Exit</div>
+            <div><SortBtn k="size">Size</SortBtn></div>
+            <div>Duration</div>
+            <div><SortBtn k="realizedPnl">PnL</SortBtn></div>
+            <div>Tags</div>
+            <div></div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Trade rows */}
+          <div className="divide-y divide-border/30">
+            {sorted.map((t) => {
+              const entry = journal[t.id];
+              const isHighlighted = !highlightedAsset || highlightedAsset === t.asset;
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => openNote(t)}
+                  className={`grid grid-cols-[1fr_0.6fr_0.8fr_0.8fr_0.7fr_0.8fr_1.2fr_28px] gap-2 items-center px-4 py-3 cursor-pointer transition-all hover:bg-accent/30 ${
+                    isHighlighted ? "opacity-100" : "opacity-20"
+                  }`}
+                >
+                  <div className="text-xs font-semibold tracking-wide">{t.asset}</div>
+                  <div>
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      t.side === "Long"
+                        ? "bg-profit/10 text-profit"
+                        : "bg-loss/10 text-loss"
+                    }`}>
+                      {t.side === "Long" ? <TrendingUp className="h-2.5 w-2.5" /> : <TrendingDown className="h-2.5 w-2.5" />}
+                      {t.side}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    <span>${t.entryPrice.toLocaleString()}</span>
+                    <span className="mx-1 text-border">→</span>
+                    <span>${t.exitPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="text-[11px]">{t.size.toLocaleString()}</div>
+                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Clock className="h-2.5 w-2.5" />
+                    {formatDuration(t.entryTime, t.exitTime)}
+                  </div>
+                  <div className={`text-xs font-semibold ${t.realizedPnl >= 0 ? "text-profit" : "text-loss"}`}>
+                    {t.realizedPnl >= 0 ? "+" : ""}${t.realizedPnl.toFixed(2)}
+                  </div>
+                  <div className="flex flex-wrap gap-1 max-w-[180px]">
+                    {entry?.tags?.map((tag) => (
+                      <span
+                        key={tag}
+                        onClick={(e) => toggleQuickTag(t.id, tag, e)}
+                        className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-medium text-primary cursor-pointer hover:bg-primary/20 transition-colors"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div>
+                    {entry?.note && <MessageSquare className="h-3 w-3 text-neon-cyan" />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="glass-card border-white/[0.06]">
           <DialogHeader>
             <DialogTitle className="text-sm">
               {selected && `${selected.asset} ${selected.side} — Annotation`}
             </DialogTitle>
           </DialogHeader>
 
-          {/* Quick Tags */}
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
               <Tag className="h-3 w-3" /> Quick Tags
@@ -190,7 +196,7 @@ export function TradeJournal({ trades, highlightedAsset }: Props) {
                   onClick={() => toggleTag(tag)}
                   className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-colors ${
                     selectedTags.includes(tag)
-                      ? "border-primary bg-primary/20 text-primary"
+                      ? "border-primary bg-primary/15 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
                   }`}
                 >
@@ -204,7 +210,7 @@ export function TradeJournal({ trades, highlightedAsset }: Props) {
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
             placeholder="Add your notes about this trade..."
-            className="min-h-[100px] bg-secondary/50 border-border"
+            className="min-h-[100px] bg-secondary/30 border-white/[0.06]"
           />
           <div className="flex justify-end gap-2">
             <Button variant="ghost" size="sm" onClick={() => setSelected(null)}>Cancel</Button>

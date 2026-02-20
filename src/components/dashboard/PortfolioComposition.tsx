@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trade } from "@/data/mockTrades";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip, Sector } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Props {
   trades: Trade[];
@@ -11,13 +10,13 @@ interface Props {
 
 const COLORS = [
   "hsl(263,70%,58%)",
-  "hsl(217,91%,60%)",
-  "hsl(142,76%,46%)",
+  "hsl(174,100%,46%)",
+  "hsl(199,89%,56%)",
   "hsl(38,92%,50%)",
-  "hsl(0,84%,60%)",
+  "hsl(340,82%,60%)",
   "hsl(280,60%,50%)",
-  "hsl(190,80%,50%)",
-  "hsl(330,70%,55%)",
+  "hsl(150,80%,45%)",
+  "hsl(20,90%,55%)",
 ];
 
 type ViewMode = "volume" | "pnl";
@@ -50,37 +49,28 @@ export function PortfolioComposition({ trades, onAssetClick, highlightedAsset }:
   };
 
   return (
-    <Card className="border-border/50 bg-card/80 backdrop-blur">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium">Portfolio Composition</CardTitle>
-          <div className="flex rounded-lg border border-border bg-secondary/50 p-0.5">
+    <div className="glass-card animate-fade-in" style={{ animationDelay: "150ms" }}>
+      <div className="flex items-center justify-between p-4 pb-2">
+        <h3 className="text-sm font-medium">Portfolio Composition</h3>
+        <div className="flex rounded-lg border border-border bg-secondary/30 p-0.5">
+          {(["volume", "pnl"] as const).map((mode) => (
             <button
-              onClick={() => setViewMode("volume")}
+              key={mode}
+              onClick={() => setViewMode(mode)}
               className={`rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                viewMode === "volume"
+                viewMode === mode
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              By Volume
+              {mode === "volume" ? "Volume" : "PnL"}
             </button>
-            <button
-              onClick={() => setViewMode("pnl")}
-              className={`rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                viewMode === "pnl"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              By PnL
-            </button>
-          </div>
+          ))}
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-4 pt-0">
         <div className="flex items-center gap-4">
-          <div className="h-48 w-48">
+          <div className="h-48 w-48 shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -91,23 +81,26 @@ export function PortfolioComposition({ trades, onAssetClick, highlightedAsset }:
                   outerRadius={70}
                   dataKey="value"
                   strokeWidth={2}
-                  stroke="hsl(222,47%,6%)"
+                  stroke="hsl(228,28%,4%)"
+                  animationBegin={0}
+                  animationDuration={800}
                 >
                   {data.map((d, i) => (
                     <Cell
                       key={i}
                       fill={d.fill}
-                      opacity={highlightedAsset && highlightedAsset !== d.name ? 0.3 : 1}
-                      style={{ cursor: "pointer" }}
+                      opacity={highlightedAsset && highlightedAsset !== d.name ? 0.25 : 1}
+                      style={{ cursor: "pointer", transition: "opacity 300ms" }}
                     />
                   ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(222,44%,10%)",
-                    border: "1px solid hsl(217,25%,16%)",
-                    borderRadius: 8,
+                    background: "hsl(225,28%,9%)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 10,
                     fontSize: 12,
+                    backdropFilter: "blur(12px)",
                   }}
                   formatter={(value: number, name: string, props: any) => {
                     const entry = props.payload;
@@ -122,17 +115,17 @@ export function PortfolioComposition({ trades, onAssetClick, highlightedAsset }:
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 flex-1">
             {data.map((d, i) => (
               <button
                 key={d.name}
                 onClick={() => handleLegendClick(d.name)}
-                className={`flex items-center gap-2 rounded-md px-2 py-1 transition-all hover:bg-accent/50 ${
-                  highlightedAsset === d.name ? "bg-accent/70 ring-1 ring-primary/50" : ""
-                } ${highlightedAsset && highlightedAsset !== d.name ? "opacity-40" : ""}`}
+                className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-all hover:bg-accent/50 ${
+                  highlightedAsset === d.name ? "bg-accent/70 ring-1 ring-primary/40" : ""
+                } ${highlightedAsset && highlightedAsset !== d.name ? "opacity-35" : ""}`}
               >
-                <div className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
-                <div className="text-left">
+                <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
+                <div className="text-left flex-1">
                   <p className="text-xs font-medium">{d.name}</p>
                   <p className="text-[10px] text-muted-foreground">
                     {viewMode === "volume"
@@ -147,7 +140,7 @@ export function PortfolioComposition({ trades, onAssetClick, highlightedAsset }:
             ))}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
